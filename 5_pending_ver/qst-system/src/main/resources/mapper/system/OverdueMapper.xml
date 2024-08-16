@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qst.system.mapper.OverdueMapper">
+
+    <!--根据企业编号统计逾期次数-->
+    <select id="countOverdue" parameterType="String" resultType="int">
+        select count(*) from overdue where ove_com_no = #{oveComNo}
+    </select>
+
+    <resultMap type="Overdue" id="OverdueResult">
+        <result property="oveId" column="ove_id"/>
+        <result property="oveComNo" column="ove_com_no"/>
+        <result property="oveLoaId" column="ove_loa_id"/>
+        <result property="oveMoney" column="ove_money"/>
+        <result property="oveStartTime" column="ove_start_time"/>
+        <result property="oveLastTime" column="ove_last_time"/>
+        <result property="oveCutCount" column="ove_cut_count"/>
+        <result property="oveAddInt" column="ove_add_int"/>
+        <result property="oveDel" column="ove_del"/>
+        <association property="company" column="ove_com_no" javaType="Company" resultMap="CompanyResult"/>
+        <association property="loans" column="ove_loa_id" javaType="Loans" resultMap="LoansResult"/>
+    </resultMap>
+
+    <resultMap type="Company" id="CompanyResult">
+        <result property="comId" column="com_id"/>
+        <result property="comNo" column="com_no"/>
+        <result property="comName" column="com_name"/>
+        <result property="comEmail" column="com_email"/>
+        <result property="comPhone" column="com_phone"/>
+        <result property="comPwd" column="com_pwd"/>
+        <result property="comRemark" column="com_remark"/>
+        <result property="comStatus" column="com_status"/>
+    </resultMap>
+
+    <resultMap type="Loans" id="LoansResult">
+        <result property="loaId" column="loa_id"/>
+        <result property="loaNo" column="loa_no"/>
+        <result property="loaComNo" column="loa_com_no"/>
+        <result property="loaBankId" column="loa_bank_id"/>
+        <result property="loaLisId" column="loa_lis_id"/>
+        <result property="loaUse" column="loa_use"/>
+        <result property="loaIntegral" column="loa_integral"/>
+        <result property="loaRate" column="loa_rate"/>
+        <result property="loaState" column="loa_state"/>
+        <result property="loaTime" column="loa_time"/>
+        <result property="loaMoney" column="loa_money"/>
+        <result property="loaEndTime" column="loa_end_time"/>
+    </resultMap>
+
+    <sql id="selectOverdueVo">
+        select ove_id,
+               ove_loa_id,
+               ove_com_no,
+               ove_money,
+               ove_start_time,
+               ove_last_time,
+               ove_cut_count,
+               ove_add_int,
+               ove_del,
+               com_name,
+               loa_no
+        from overdue o
+                 LEFT JOIN company c on o.ove_com_no = c.com_id
+                 LEFT JOIN loans l on o.ove_loa_id = l.loa_id
+    </sql>
+
+    <select id="selectOverdueList" parameterType="Overdue" resultMap="OverdueResult">
+        <include refid="selectOverdueVo"/>
+        <where>
+            <if test="oveComNo != null  and oveComNo != ''">and ove_com_no = #{oveComNo}</if>
+            <if test="oveLoaId != null  and oveLoaId != ''">and ove_loa_id = #{oveLoaId}</if>
+            <if test="oveMoney != null ">and ove_money = #{oveMoney}</if>
+            <if test="oveStartTime != null ">and date(ove_start_time) = #{oveStartTime}</if>
+            <if test="oveLastTime != null ">and date(ove_last_time) = #{oveLastTime}</if>
+            <if test="oveCutCount != null ">and ove_cut_count = #{oveCutCount}</if>
+            <if test="oveAddInt != null  and oveAddInt != ''">and ove_add_int = #{oveAddInt}</if>
+        </where>
+    </select>
+
+    <select id="selectOverdueByOveId" parameterType="Long" resultMap="OverdueResult">
+        <include refid="selectOverdueVo"/>
+        where ove_id = #{oveId}
+    </select>
+
+    <insert id="insertOverdue" parameterType="Overdue" useGeneratedKeys="true" keyProperty="oveId">
+        insert into overdue
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="oveComNo != null">ove_com_no,</if>
+            <if test="oveLoaId != null">ove_loa_id,</if>
+            <if test="oveMoney != null">ove_money,</if>
+            <if test="oveStartTime != null">ove_start_time,</if>
+            <if test="oveLastTime != null">ove_last_time,</if>
+            <if test="oveCutCount != null">ove_cut_count,</if>
+            <if test="oveAddInt != null">ove_add_int,</if>
+            <if test="oveDel != null">ove_del,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="oveComNo != null">#{oveComNo},</if>
+            <if test="oveLoaId != null">#{oveLoaId},</if>
+            <if test="oveMoney != null">#{oveMoney},</if>
+            <if test="oveStartTime != null">#{oveStartTime},</if>
+            <if test="oveLastTime != null">#{oveLastTime},</if>
+            <if test="oveCutCount != null">#{oveCutCount},</if>
+            <if test="oveAddInt != null">#{oveAddInt},</if>
+            <if test="oveDel != null">#{oveDel},</if>
+        </trim>
+    </insert>
+
+    <update id="updateOverdue" parameterType="Overdue">
+        update overdue
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="oveComNo != null">ove_com_no = #{oveComNo},</if>
+            <if test="oveLoaId != null">ove_loa_id = #{oveLoaId},</if>
+            <if test="oveMoney != null">ove_money = #{oveMoney},</if>
+            <if test="oveStartTime != null">ove_start_time = #{oveStartTime},</if>
+            <if test="oveLastTime != null">ove_last_time = #{oveLastTime},</if>
+            <if test="oveCutCount != null">ove_cut_count = #{oveCutCount},</if>
+            <if test="oveAddInt != null">ove_add_int = #{oveAddInt},</if>
+            <if test="oveDel != null">ove_del = #{oveDel},</if>
+        </trim>
+        where ove_id = #{oveId}
+    </update>
+
+    <delete id="deleteOverdueByOveId" parameterType="Long">
+        delete
+        from overdue
+        where ove_id = #{oveId}
+    </delete>
+
+    <delete id="deleteOverdueByOveIds" parameterType="String">
+        delete from overdue where ove_id in
+        <foreach item="oveId" collection="array" open="(" separator="," close=")">
+            #{oveId}
+        </foreach>
+    </delete>
+</mapper>

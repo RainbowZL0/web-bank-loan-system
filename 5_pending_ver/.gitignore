@@ -1,0 +1,9 @@
+/.idea/
+/qst-admin/target/
+/qst-common/target/
+/qst-framework/target/
+/qst-generator/target/
+/qst-quartz/target/
+/qst-system/target/
+/qst-admin/src/main/resources/application-druid.yml
+/qst-admin/src/main/resources/application.yml

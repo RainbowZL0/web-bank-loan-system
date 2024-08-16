@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qst.s5.mapper.MkxUserCommentMapper">
+
+    <resultMap type="com.qst.s5.domain.MkxUserCommentForm" id="UserCommentResultMap">
+        <result property="comment_id" column="comment_id"/>
+        <result property="user_id" column="user_id"/>
+        <result property="comment_content" column="comment_content"/>
+    </resultMap>
+
+    <sql id="select_pattern">
+        select comment_id, user_id, comment_content from user_comment
+    </sql>
+
+    <select id="selectActivityList" parameterType="com.qst.s5.domain.MkxUserCommentForm" resultMap="UserCommentResultMap">
+        <include refid="select_pattern"/>
+        <where>
+            <if test="comment_id != null "> and comment_id = #{comment_id}</if>
+            <if test="user_id != null "> and user_id = #{user_id}</if>
+            <if test="comment_content != null  and comment_content != ''"> and comment_content = #{comment_content}</if>
+        </where>
+    </select>
+
+    <select id="selectActivityByAId" parameterType="Long" resultMap="UserCommentResultMap">
+        <include refid="select_pattern"/>
+        where comment_id = #{comment_id}
+    </select>
+
+    <insert id="add_user_comment" parameterType="com.qst.s5.domain.MkxUserCommentForm" useGeneratedKeys="true" keyProperty="data.comment_id">
+        insert into user_comment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <!--test条件里的是传入对象的属性名。紫色的是表格的列名。#{}传入对象的属性取值。-->
+            <if test="data.comment_id != null">comment_id,</if>
+            <if test="data.user_id != null">user_id,</if>
+            <if test="data.comment_content != null">comment_content,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="data.comment_id != null">#{data.comment_id},</if>
+            <if test="data.user_id != null">#{data.user_id},</if>
+            <if test="data.comment_content != null">#{data.comment_content},</if>
+        </trim>
+    </insert>
+
+<!--    <update id="updateActivity" parameterType="Activity">-->
+<!--        update activity-->
+<!--        <trim prefix="SET" suffixOverrides=",">-->
+<!--            <if test="beginDate != null">begin_date = #{beginDate},</if>-->
+<!--            <if test="endDate != null">end_date = #{endDate},</if>-->
+<!--            <if test="actTitle != null">act_title = #{actTitle},</if>-->
+<!--            <if test="actDetail != null">act_detail = #{actDetail},</if>-->
+<!--            <if test="actState != null">act_state = #{actState},</if>-->
+<!--            <if test="updateTime != null">update_time = #{updateTime},</if>-->
+<!--        </trim>-->
+<!--        where a_id = #{aId}-->
+<!--    </update>-->
+
+<!--    <delete id="deleteActivityByAId" parameterType="Long">-->
+<!--        delete from activity where a_id = #{aId}-->
+<!--    </delete>-->
+
+<!--    <delete id="deleteActivityByAIds" parameterType="String">-->
+<!--        delete from activity where a_id in-->
+<!--        <foreach item="aId" collection="array" open="(" separator="," close=")">-->
+<!--            #{aId}-->
+<!--        </foreach>-->
+<!--    </delete>-->
+</mapper>

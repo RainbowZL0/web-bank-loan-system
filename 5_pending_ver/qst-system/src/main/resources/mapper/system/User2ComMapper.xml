@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qst.system.mapper.User2ComMapper">
+
+    <sql id = "selectComIdVo">
+        select com_id
+        from user2com
+    </sql>
+
+
+    <select id="selectCIdByUId" parameterType="java.lang.String" resultType="java.lang.Integer">
+        <include refid="selectComIdVo"/>
+        where user_id = #{uId}
+    </select>
+
+
+</mapper>
